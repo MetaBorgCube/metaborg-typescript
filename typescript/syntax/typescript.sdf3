@@ -75,16 +75,6 @@ context-free syntax
   PrimaryExpression.literal = Literal
   PrimaryExpression.object = ObjectLiteral
   
-  Literal.null = <null>
-  Literal.boolean = BooleanLiteral
-  Literal.number = NumericLiteral
-  Literal.string = STRING
-  
-  BooleanLiteral.true = <true>
-  BooleanLiteral.false = <false>
-  
-  NumericLiteral.number = INT
-  
   ObjectLiteral.empty = <{}>
   ObjectLiteral.fields = <{<{PropertyDefinition ","}+>}>
   ObjectLiteral.fieldsTrailingComma = <{<{PropertyDefinition ","}+>,}>

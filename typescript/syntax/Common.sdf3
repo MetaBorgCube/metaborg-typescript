@@ -4,6 +4,8 @@ lexical syntax
 
   ID             = [a-zA-Z] [a-zA-Z0-9]* 
   ID             = Keyword {reject}
+  ID             = NullLiteral {reject}
+  ID             = BooleanLiteral {reject}
   INT            = "-"? [0-9]+ 
   STRING         = "\"" StringChar* "\"" 
   StringChar     = ~[\"\n] 
@@ -58,12 +60,17 @@ lexical syntax
   Keyword = "import"
   Keyword = "try"
   
-  // NullLiteral
-  Keyword = "null"
+  Literal.null = NullLiteral
+  Literal.boolean = BooleanLiteral
+  Literal.number = NumericLiteral
+  Literal.string = STRING
   
-  // BooleanLiteral
-  Keyword = "true"
-  Keyword = "false"
+  NullLiteral.null = "null"
+  
+  BooleanLiteral.true = "true"
+  BooleanLiteral.false = "false"
+  
+  NumericLiteral.number = INT
   
   // FutureReservedWord
   Keyword = "enum"
