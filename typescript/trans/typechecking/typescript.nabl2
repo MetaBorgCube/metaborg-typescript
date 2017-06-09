@@ -10,6 +10,7 @@ signature
     
     constructors
     	RECORD	: scope -> Type
+    	MODULE  : scope -> Type
     	
     	NUMBER	  : Type
 		  STRING	  : Type
@@ -21,7 +22,7 @@ signature
 	name resolution
 		labels
 	      P I
-	
+	      
 	    order
 	      D < I,
 	      D < P,
@@ -42,10 +43,39 @@ rules
     	new s.
     
     [[ Program(statements) ^ (s) ]] :=
-    	Map1 [[ statements ^ (s) ]],
-    	distinct/name D(s)/Value | error @ NAMES,
-    	distinct/name D(s)/Type | error @ NAMES.
-    	
+      new program_scope,
+      program_scope -P-> s,
+    	Map1 [[ statements ^ (program_scope) ]],
+    	distinct/name D(program_scope)/Value | error @ NAMES,
+    	distinct/name D(program_scope)/Type | error @ NAMES.
+    
+    [[ Module(name, body) ^ (s) ]] :=
+      new module_scope,
+      module_scope -P-> s,
+      Module{name} <- s,
+      Map1 [[ body ^ (module_scope) ]],
+      distinct/name D(module_scope)/Value | error @ NAMES,
+      distinct/name D(module_scope)/Type | error @ NAMES.
+      
+    [[ ExportDeclaration(declaration) ^ (s) ]] :=
+      new export_scope,
+      s -E-> export_scope,
+      [[ declaration ^ (export_scope) ]].
+    
+    [[ ImportClause(imports, From(filename), _) ^ (s) ]] :=
+      Module{filename} ?===> module_scope,
+      new import_scope,
+      [[ imports ^ (import_scope, module_scope) ]].
+    
+    [[ ImportsList(list, _) ^ (import_scope, module_scope) ]] :=
+      Map2 [[ list ^ (import_scope, module_scope) ]].
+    
+    [[ NamedImport(name) ^ (import_scope, module_scope) ]] :=
+      Value{name} -> module_scope,
+      Value{name} |-> d,
+      d: ty,
+      Value{name} <- import_scope,
+      Value{name} : ty !.
     	
     [[ InterfaceDecl(name, _, fields) ^ (s) ]] :=
     	Type{name} <- s,
