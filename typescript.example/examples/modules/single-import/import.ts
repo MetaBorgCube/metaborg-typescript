@@ -1,5 +1,5 @@
 filename:"import"
-import {foo} from "export";
+import {foo, baz, foo2} from "export";
 
 function bar(s: number) {}
 

@@ -26,7 +26,7 @@ context-free syntax
   
   ModuleItem = ImportDeclaration
   ModuleItem = ExportDeclaration
-  ModuleItem = StatementListItem
+  ModuleItem.ModuleStatement = StatementListItem
   
   ImportDeclaration.ImportClause = <import <ImportClause> <FromClause> <SemiColon?>>
   
