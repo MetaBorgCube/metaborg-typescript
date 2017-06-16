@@ -43,7 +43,11 @@ signature
 			Type
 			Value
 			Return
-      
+
+	constraint generator
+		ConstainsInitializer [[ list(a) ^ (s) ]]
+		MapLast(X) [[ list(a) ^ (s) ]]   
+		   
 rules
 
 	Map3	[[ xs ^ (b,c,d) ]] := Map3(default) [[ xs ^ (b,c,d) ]].
@@ -53,7 +57,22 @@ rules
 	Map3(X)[[ [] ^ (s1,s2,s3) ]].
 	
 	init ^ (s) :=
-    	new s.
+    	new s,
+    	
+    	NULL() <! ANY(),
+      UNDEFINED() <! ANY(),
+      VOID() <! ANY(),
+      
+      NULL() <! STRING(),
+      UNDEFINED() <! STRING(),
+      ANY() <! STRING(),
+      
+      NULL() <! NUMBER(),
+      UNDEFINED() <! NUMBER(),
+      ANY() <! NUMBER(),
+      
+      UNDEFINED() <! VOID(),
+      NULL() <! VOID().
     
     [[ Program(statements) ^ (s) ]] :=
       new program_scope,
@@ -126,18 +145,9 @@ rules
    	[[ TypeAnnotation(UndefinedType()) ^(_): UNDEFINED() ]] := true.
    	[[ TypeAnnotation(NullType()) ^(_): NULL() ]] := true.
    	[[ TypeAnnotation(Void()) ^(_): VOID() ]] := true.
-   	[[ TypeAnnotation(Any()) ^(_): ANY()]] := 
-   		NULL() <! ANY(),
-   		UNDEFINED() <! ANY().
-   		
-   	[[ TypeAnnotation(Number()) ^(_): NUMBER()]] := 
-   		NULL() <! NUMBER(),
-   		UNDEFINED() <! NUMBER(),
-   		ANY() <! NUMBER().
-   	[[ TypeAnnotation(String()) ^(_): STRING()]] := 
-   		NULL() <! STRING(),
-   		UNDEFINED() <! STRING(),
-   		ANY() <! STRING().
+   	[[ TypeAnnotation(Any()) ^(_): ANY()]] := true.
+   	[[ TypeAnnotation(Number()) ^(_): NUMBER()]] := true.
+   	[[ TypeAnnotation(String()) ^(_): STRING()]] := true.
    	
    	[[ TypeAnnotation(Object(objectType)) ^ (s): ty ]] :=
 		[[ objectType ^ (s) : ty ]],
@@ -152,9 +162,20 @@ rules
         NULL() <! ty,
 		UNDEFINED() <! ty,
    	  	ANY() <! ty.
-   	  	
-   	  	
-    [[ Lexical(_, declarations, _) ^ (s) ]] :=
+    
+    MapLast(X) [[ [] ^ (_) ]] := true.
+    MapLast(X) [[ [x] ^ (s) ]] := X [[ x ^ (s) ]].
+    MapLast(X) [[ [x|xs] ^ (s) ]] :=  MapLast(X) [[ xs ^ (s) ]].
+    
+    ContainsInitializer [[ SimpleVariableDeclaration(_, _, None()) ^ (_) ]] := false | error "const declarations must be initialized.".
+    ContainsInitializer [[ SimpleVariableDeclaration(_, _, Some(_)) ^ (_) ]] := true.
+    
+    
+    [[ Lexical(Const(), declarations, _) ^(s) ]] :=
+    	MapLast(ContainsInitializer) [[ declarations ^ (s) ]],
+    	Map1 [[ declarations ^ (s) ]].
+    
+    [[ Lexical(Let(), declarations, _) ^ (s) ]] :=
     	Map1 [[ declarations ^ (s) ]].
     
     [[ Variable(declarations, _) ^ (s) ]] :=
