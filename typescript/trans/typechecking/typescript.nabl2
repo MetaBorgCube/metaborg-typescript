@@ -93,9 +93,9 @@ rules
     ContainsInitializer [[ SimpleVariableDeclaration(_, _, Some(_)) ^ (_) ]] := true.
     
     
-    [[ Lexical(Const(), delcarations, _) ^(s) ]] :=
-    	MapLast(ContainsInitializer) [[ delcarations ^ (s) ]],
-    	Map1 [[ delcarations ^ (s) ]].
+    [[ Lexical(Const(), declarations, _) ^(s) ]] :=
+    	MapLast(ContainsInitializer) [[ declarations ^ (s) ]],
+    	Map1 [[ declarations ^ (s) ]].
     
     [[ Lexical(Let(), declarations, _) ^ (s) ]] :=
     	Map1 [[ declarations ^ (s) ]].
