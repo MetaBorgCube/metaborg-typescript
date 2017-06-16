@@ -36,7 +36,11 @@ signature
 			Type
 			Value
 			Return
-      
+
+	constraint generator
+		ConstainsInitializer [[ list(a) ^ (s) ]]
+		MapLast(X) [[ list(a) ^ (s) ]]   
+		   
 rules
 	
 	init ^ (s) :=
@@ -80,9 +84,20 @@ rules
     	Type{name} |-> d | error $[Cannot resolve [name]],
         d : ty,
    	  	ANY() <! ty.
-   	  	
-   	  	
-    [[ Lexical(_, declarations, _) ^ (s) ]] :=
+    
+    MapLast(X) [[ [] ^ (_) ]] := true.
+    MapLast(X) [[ [x] ^ (s) ]] := X [[ x ^ (s) ]].
+    MapLast(X) [[ [x|xs] ^ (s) ]] :=  MapLast(X) [[ xs ^ (s) ]].
+    
+    ContainsInitializer [[ SimpleVariableDeclaration(_, _, None()) ^ (_) ]] := false | error "const declarations must be initialized.".
+    ContainsInitializer [[ SimpleVariableDeclaration(_, _, Some(_)) ^ (_) ]] := true.
+    
+    
+    [[ Lexical(Const(), delcarations, _) ^(s) ]] :=
+    	MapLast(ContainsInitializer) [[ delcarations ^ (s) ]],
+    	Map1 [[ delcarations ^ (s) ]].
+    
+    [[ Lexical(Let(), declarations, _) ^ (s) ]] :=
     	Map1 [[ declarations ^ (s) ]].
     
     [[ Variable(declarations, _) ^ (s) ]] :=
