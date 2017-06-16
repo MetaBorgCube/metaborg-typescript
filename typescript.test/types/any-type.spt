@@ -35,11 +35,12 @@ function f(a: string) {
 f(a);
 ]] 0 errors
 
-test any is a subtype of an interface [[ 
-interface X {}
-var a: any;
-const b: X = a;
-]] 0 errors
+// TODO: Nabl2 does not support custom relations
+//test any is a subtype of an interface [[ 
+//interface X {}
+//var a: any;
+//const b: X = a;
+//]] 0 errors
 
 // TODO: Nabl2 does not support both top and bottom type
 //test anything else is also a subtype of any [[
