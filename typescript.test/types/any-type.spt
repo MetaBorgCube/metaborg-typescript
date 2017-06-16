@@ -48,4 +48,27 @@ const b: X = a;
 //const b: any = a;
 //]] 0 errors
 
+test void is a subtype of any [[
+var a: void;
+const c: any = a;
+]] 0 errors
 
+test null is a subtype of void [[
+var a: null;
+const c: void = a;
+]] 0 errors
+
+test undefined is a subtype of void [[
+var a: undefined;
+const c: void = a;
+]] 0 errors
+
+test null is not a subtype of undefined [[
+var a: null;
+const c: undefined = a;
+]] 1 errors
+
+test undefined is not a subtype of null [[
+var a: undefined;
+const c: null = a;
+]] 1 errors
