@@ -37,9 +37,9 @@ f(a);
 
 test any is a subtype of an interface [[ 
 interface X {}
-var a;
-const b: X = b; 
-]]
+var a: any;
+const b: X = a;
+]] 0 errors
 
 test anything else is also a subtype of any [[
 interface X {}

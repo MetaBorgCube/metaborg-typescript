@@ -11,6 +11,9 @@ signature
     constructors
     	RECORD	: scope -> Type
     	
+    	VOID      : Type
+    	UNDEFINED : Type
+    	NULL      : Type
 		ANY       : Type
 		NUMBER	  : Type
 		STRING	  : Type
@@ -67,18 +70,34 @@ rules
    		Field{name} : ty !,
    		[[ type ^ (s): ty]].
    	
-   	[[ TypeAnnotation(Any()) ^(_): ANY()]] := true.
-   	[[ TypeAnnotation(Number()) ^(_): NUMBER()]] := ANY() <! NUMBER().
-   	[[ TypeAnnotation(String()) ^(_): STRING()]] := ANY() <! STRING().
+   	[[ TypeAnnotation(UndefinedType()) ^(_): UNDEFINED() ]] := true.
+   	[[ TypeAnnotation(NullType()) ^(_): NULL() ]] := true.
+   	[[ TypeAnnotation(Void()) ^(_): VOID() ]] := true.
+   	[[ TypeAnnotation(Any()) ^(_): ANY()]] := 
+   		NULL() <! ANY(),
+   		UNDEFINED() <! ANY().
+   		
+   	[[ TypeAnnotation(Number()) ^(_): NUMBER()]] := 
+   		NULL() <! NUMBER(),
+   		UNDEFINED() <! NUMBER(),
+   		ANY() <! NUMBER().
+   	[[ TypeAnnotation(String()) ^(_): STRING()]] := 
+   		NULL() <! STRING(),
+   		UNDEFINED() <! STRING(),
+   		ANY() <! STRING().
    	
    	[[ TypeAnnotation(Object(objectType)) ^ (s): ty ]] :=
-   	  [[ objectType ^ (s) : ty ]],
-   	  ANY() <! ty.
+		[[ objectType ^ (s) : ty ]],
+		NULL() <! ty,
+		UNDEFINED() <! ty,
+		ANY() <! ty.
     	
     [[ TypeAnnotation(Id(name)) ^ (s): ty ]] :=
     	Type{name} -> s,
     	Type{name} |-> d | error $[Cannot resolve [name]],
         d : ty,
+        NULL() <! ty,
+		UNDEFINED() <! ty,
    	  	ANY() <! ty.
    	  	
    	  	
@@ -109,6 +128,8 @@ rules
     	[[ value ^ (s) : valueTy ]],
     	valueTy <? ty.
     
+	[[ Undefined() ^ (_): UNDEFINED() ]] := true.
+	[[ Null() ^ (_): NULL() ]] := true.
     [[ Number(_) ^ (_): NUMBER() ]] := true.
     [[ String(_) ^ (_): STRING() ]] := true.
     [[ True() ^ (_): BOOLEAN() ]] := true.
