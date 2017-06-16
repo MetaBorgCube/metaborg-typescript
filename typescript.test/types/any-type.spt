@@ -1,0 +1,50 @@
+module any-type
+
+language typescript
+start symbol Program
+
+test const has any type [[
+var a: any;
+[[a]];
+]] run nabl2-get-ast-type on #1 to ANY()
+
+test const without type annotation has any type [[
+var a;
+[[a]];
+]] run nabl2-get-ast-type on #1 to ANY()
+
+test any type is subtype of numbers [[
+var a: any;
+const b: number = a;
+]] 0 errors
+
+
+test any type is subtype of string [[
+var a: any;
+const b: string = a;
+]] 0 errors
+
+
+test any type can be passed as whatever argument [[
+var a;
+
+function f(a: string) {
+	return a;
+}
+
+f(a);
+]] 0 errors
+
+test any is a subtype of an interface [[ 
+interface X {}
+var a;
+const b: X = b; 
+]]
+
+test anything else is also a subtype of any [[
+interface X {}
+var a: X;
+const b: any = a;
+]] 0 errors
+
+

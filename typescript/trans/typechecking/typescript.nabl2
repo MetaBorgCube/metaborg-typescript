@@ -11,11 +11,12 @@ signature
     constructors
     	RECORD	: scope -> Type
     	
-    	NUMBER	  : Type
-		  STRING	  : Type
-		  BOOLEAN   : Type
-		  UNDEFINED : Type
-		  FUNCTION  : list(Type) * Type -> Type
+		ANY       : Type
+		NUMBER	  : Type
+		STRING	  : Type
+		BOOLEAN   : Type
+		UNDEFINED : Type
+		FUNCTION  : list(Type) * Type -> Type
 		
 
 	name resolution
@@ -66,22 +67,30 @@ rules
    		Field{name} : ty !,
    		[[ type ^ (s): ty]].
    	
-   	[[ TypeAnnotation(Number()) ^(_): NUMBER()]] := true.
-   	[[ TypeAnnotation(String()) ^(_): STRING()]] := true.
+   	[[ TypeAnnotation(Any()) ^(_): ANY()]] := true.
+   	[[ TypeAnnotation(Number()) ^(_): NUMBER()]] := ANY() <! NUMBER().
+   	[[ TypeAnnotation(String()) ^(_): STRING()]] := ANY() <! STRING().
    	
    	[[ TypeAnnotation(Object(objectType)) ^ (s): ty ]] :=
-   	  [[ objectType ^ (s) : ty ]].
+   	  [[ objectType ^ (s) : ty ]],
+   	  ANY() <! ty.
     	
     [[ TypeAnnotation(Id(name)) ^ (s): ty ]] :=
     	Type{name} -> s,
     	Type{name} |-> d | error $[Cannot resolve [name]],
-        d : ty.
-    	
+        d : ty,
+   	  	ANY() <! ty.
+   	  	
+   	  	
     [[ Lexical(_, declarations, _) ^ (s) ]] :=
     	Map1 [[ declarations ^ (s) ]].
     
     [[ Variable(declarations, _) ^ (s) ]] :=
       Map1 [[ declarations ^ (s) ]].
+    
+    [[ SimpleVariableDeclaration(name, None(), None()) ^ (s) ]] := 
+      Value{name} <- s,
+      Value{name} : ANY().
     
     [[ SimpleVariableDeclaration(name, None(), Some(value)) ^ (s) ]] := 
       [[ value ^ (s) : valueTy ]],
@@ -98,7 +107,7 @@ rules
     	Value{name} : ty !,
     	[[ type ^ (s) : ty ]],
     	[[ value ^ (s) : valueTy ]],
-    	ty <? valueTy.
+    	valueTy <? ty.
     
     [[ Number(_) ^ (_): NUMBER() ]] := true.
     [[ String(_) ^ (_): STRING() ]] := true.
