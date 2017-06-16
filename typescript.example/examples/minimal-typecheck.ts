@@ -8,8 +8,8 @@ f(a);
 
 interface X {}
 
-const b: X = a;
-//const c: any = b;
+//const b: X = a;
+const d: any = a;
 var c: string = undefined;
-//const b: A = { foo: 5 }
-//const c: A = 512
+//const e: A = { foo: 5 }
+//const f: A = 512
